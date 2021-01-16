@@ -1,0 +1,20 @@
+{% extends "editor/base.html" %}
+
+{% block scripts %}
+	{{super()}}
+	<script src="{{url_for('static', path='/editor.js')}}"></script>
+	<link rel="stylesheet"
+		  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+{% endblock %}
+
+{% block body %}
+
+	<div id="ijik-root">
+	</div>
+
+	<script type="text/javascript">
+		{{ js|safe }}
+		ijik({ root: "#ijik-root" });
+	</script>
+	
+{% endblock %}

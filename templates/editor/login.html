@@ -1,0 +1,23 @@
+{% extends "editor/form.html" %}
+{% import "editor/login_signup.html" as ls with context %}
+
+{% block form %}
+
+	{{ ls.navi("/login") }}
+
+	<form method="POST" class="space-y-4 p-4 rounded-b border border-t-0">
+		<div class="text-gray-800">
+			Voit jatkaa ilmoittautumista syöttämällä kirjautumisavaimesi.
+		</div>
+
+		<input name="key"
+			   placeholder="Avain"
+			   class="w-full block rounded border h-10 p-2" />
+
+		<button type="submit"
+				class="w-full h-10 p-2 bg-green-600 text-white font-bold rounded transition hover:bg-green-700">
+			Kirjaudu
+		</button>
+	</form>
+
+{% endblock %}

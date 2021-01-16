@@ -1,0 +1,11 @@
+{% extends "editor/form.html" %}
+{% import "macros.html" as macros %}
+
+{% block form %}
+
+	{% call macros.info_notify() %}
+		Kiitos ilmoittautumisesta!
+		Sinut on kirjattu ulos.
+	{% endcall %}
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{
+  "private": true,
+  "scripts": {
+    "build-ts": "rollup -c",
+    "build-css": "postcss style.css -o static/style.css",
+    "build": "npm run build-ts && npm run build-css",
+    "prod": "NODE_ENV=production npm run build",
+    "watch-ts": "rollup -c -w"
+  },
+  "dependencies": {
+    "@types/mithril": "^2.0.6",
+    "autoprefixer": "^10.1.0",
+    "cssnano": "^4.1.10",
+    "mithril": "^2.0.4",
+    "postcss": "^8.2.1",
+    "postcss-cli": "^8.3.1",
+    "rollup": "^2.34.2",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.29.0",
+    "tailwindcss": "^2.0.2",
+    "terser": "^5.5.1",
+    "tslib": "^2.0.3",
+    "typescript": "^4.1.3"
+  },
+  "devDependencies": {}
+}

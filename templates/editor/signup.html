@@ -1,0 +1,21 @@
+{% extends "editor/form.html" %}
+{% import "editor/login_signup.html" as ls with context %}
+
+{% block form %}
+
+	{{ ls.navi("/signup") }}
+
+	<form method="POST" class="grid grid-cols-2 gap-4 p-4 rounded-b border border-t-0">
+		{% block inputs %}
+			{{ inputs|join("\n")|safe }}
+		{% endblock %}
+
+		{% block submit %}
+			<button type="submit"
+				class="col-span-full h-10 p-2 bg-green-600 text-white font-bold rounded transition hover:bg-green-700">
+				Ilmoittaudu
+			</button>
+		{% endblock %}
+	</form>
+
+{% endblock %}

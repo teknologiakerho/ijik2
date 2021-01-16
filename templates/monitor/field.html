@@ -1,0 +1,9 @@
+{% if value is boolean %}
+	{% if value %}
+		<i class="fas fa-check text-green-600"></i>
+	{% else %}
+		<i class="fas fa-times text-red-600"></i>
+	{% endif %}
+{% else %}
+	{{ value }}
+{% endif %}

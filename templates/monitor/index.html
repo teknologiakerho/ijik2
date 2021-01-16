@@ -1,0 +1,44 @@
+{% extends "monitor/base.html" %}
+{% import "macros.html" as macros %}
+
+{% block title %}
+	Ilmoittautumistiedot - IjIk
+{% endblock %}
+
+{% block body %}
+
+	<div class="max-w-5xl mx-auto mb-4 space-y-4">
+
+		{% block notifications %}
+			{% call macros.danger_notify() %}
+				Kuka tahansa, jolla on linkki pääsee näkemään tämän sivun.
+				<br/>
+				Muista tyhjentää sivuhistoria, jos olet julkisella laitteella!
+			{% endcall %}
+		{% endblock %}
+	
+	</div>
+
+	<div class="relative max-w-5xl mx-auto space-y-4">
+		{% block navi %}
+			<div class="2xl:absolute 2xl:inset-y-0 transform 2xl:-translate-x-full 2xl:pr-4">
+				<div class="2xl:sticky 2xl:top-0 grid grid-cols-3 md:grid-cols-4 2xl:grid-cols-1 gap-2">
+					{% for id,title in navis %}
+						<a href="#{{id}}"
+							class="group text-blue-500 hover:underline">
+							<span class="invisible group-hover:visible">#</span>
+							{{ title }}
+						</a>
+					{% endfor %}
+				</div>
+			</div>
+		{% endblock %}
+
+		{% block widgets %}
+			{% for widget in widgets %}
+				{{ widget|safe }}
+			{% endfor %}
+		{% endblock %}
+	</div>
+
+{% endblock %}

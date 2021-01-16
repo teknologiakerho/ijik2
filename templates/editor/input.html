@@ -1,0 +1,37 @@
+{% import "macros.html" as macros %}
+
+<div class="flex flex-col {{ class_|default("col-span-full") }}">
+
+	{% block input %}
+
+		{% if type == "checkbox" %}
+
+			{% call macros.labeled_checkbox(label or name) %}
+				{{ macros.checkbox_input(name, value) }}
+			{% endcall %}
+			
+		{% elif type == "select" %}
+			TODO
+		{% else %}
+			{#- it's text -#}
+
+			{% if label %}
+				{{ macros.text_input_label(label) }}
+			{% endif %}
+
+			{{ macros.text_input(
+				name = name,
+				type = type,
+				required = required,
+				value = value,
+				placeholder = placeholder,
+				errors = errors
+			) }}
+
+		{% endif %}
+
+		{{ macros.input_errors(errors) }}
+	
+	{% endblock %}
+
+</div>

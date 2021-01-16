@@ -1,0 +1,42 @@
+{% macro option_class(active) %}
+	flex-1 flex items-center justify-center text-center font-bold p-2
+	{% if active %}
+		bg-green-600 text-white cursor-default
+	{% else %}
+		border transition hover:bg-green-500 hover:text-white
+	{% endif %}
+{% endmacro %}
+
+{% macro option_container(active, class, href) %}
+	{% if active %}
+		<div
+	{% else %}
+		<a href="{{href}}"
+	{% endif %}
+		class="{{option_class(active)}} {{class}}">
+			{{ caller() }}
+	{% if active %}
+		</div>
+	{% else %}
+		</a>
+	{% endif %}
+{% endmacro %}
+
+{% macro left_option(active) %}
+	{% call option_container(active, "rounded-tl", "/") %}
+		Uusi ilmoittautuminen
+	{% endcall %}
+{% endmacro %}
+
+{% macro right_option(active) %}
+	{% call option_container(active, "rounded-tr", "/login") %}
+		Muokkaa ilmoittautumista
+	{% endcall %}
+{% endmacro %}
+
+{% macro navi(at) %}
+	<div class="flex">
+		{{ left_option(at == "/signup") }}
+		{{ right_option(at == "/login") }}
+	</div>
+{% endmacro %}

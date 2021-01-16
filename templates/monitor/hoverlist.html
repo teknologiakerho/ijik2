@@ -1,0 +1,18 @@
+{% import "macros.html" as macros %}
+
+{% if items|length > 0 %}
+	{% call macros.tooltip_container("bg-gray-200 rounded p-1 inline-block cursor-default") %}
+		{% call macros.tooltip_hover() %}
+			<ul>
+				{% for item in items %}
+					<li>{{item}}</li>
+				{% endfor %}
+			</ul>
+		{% endcall %}
+		{{ items[0] }}
+		{%- if items|length > 1 -%}
+			, ...
+		{% endif %}
+		({{items|length}})
+	{% endcall %}
+{% endif %}

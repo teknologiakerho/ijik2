@@ -1,0 +1,38 @@
+<div id="{{table.id}}" class="p-4 pt-0 rounded border max-h-96 overflow-auto">
+
+	{#- the z-index hacks here exists so that tooltips can pop out of the table -#}
+
+	<div class="pl-1 pr-2 h-16 flex items-center bg-white sticky top-0 z-10">
+		<div class="text-xl"> {{table.title}} ({{table.data.height}}) </div>
+		{#- XXX: the download url is hardcoded here for 2 reasons:
+		       * no need to pass the key around
+			   * starlette doesn't have a way to refer to the apirouter that routed this
+			     request (like flask has a .download to refer to the current blueprint),
+				 so this would need some extra hacks to work with multiple monitor instances
+		-#}
+		<a href="download/{{table.id}}.csv"
+		   class="ml-auto p-2 rounded bg-blue-600 text-white text-sm">
+			<i class="fas fa-file-download mr-1"></i>
+			<strong>CSV</strong>
+		</a>
+	</div>
+
+	<table class="w-full">
+
+		<tr class="text-left">
+			{% for col in table.data.html.columns %}
+				<th class="p-1 sticky top-16 z-10 bg-white">{{col|safe}}</th>
+			{% endfor %}
+		</tr>
+
+		{% for row in table.data.html.rows %}
+			<tr class="even:bg-gray-100">
+				{% for cell in row %}
+					<td class="p-1">{{cell.html|safe}}</td>
+				{% endfor %}
+			</tr>
+		{% endfor %}
+
+	</table>
+
+</div>
