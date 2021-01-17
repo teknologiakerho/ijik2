@@ -179,7 +179,7 @@ class TableData:
     @functools.cached_property
     def csv(self):
         out = io.StringIO()
-        writer = csv.writer(out)
+        writer = csv.writer(out, delimiter=';')
         writer.writerow(self.columns)
         writer.writerows((c.plaintext for c in r) for r in self.rows)
         return out.getvalue()

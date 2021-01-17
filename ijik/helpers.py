@@ -171,3 +171,12 @@ def as_param(cls, param):
     ) for field in cls.__fields__.values()])
 
     return dep
+
+
+# useful for putting lists in plaintext (eg. csv)
+
+def escape(s, ch, esc='\\'):
+    return s.replace(esc, esc+esc).replace(ch, esc+ch)
+
+def unescape(s, ch, esc='\\'):
+    return s.replace(esc+ch, ch).replace(esc+esc, esc)

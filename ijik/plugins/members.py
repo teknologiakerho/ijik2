@@ -8,7 +8,7 @@ from sqlalchemy.ext.associationproxy import _AssociationList
 from sqlalchemy.orm import Session
 
 import ijik
-from ijik.helpers import abort, filter_none, loc_validator, partial
+from ijik.helpers import abort, escape, filter_none, loc_validator, partial
 
 __all__ = ["MembersPlugin"]
 
@@ -125,7 +125,7 @@ class MembersPlugin:
 
         @monitor.field("Member", name="Joukkueet")
         def teams(member):
-            return ";".join(str(t.id) for t in member.teams)
+            return ",".join(str(t.id) for t in member.teams)
 
         @teams.html
         def teams(member):
@@ -133,11 +133,11 @@ class MembersPlugin:
 
         @monitor.field("Member", name="Joukkueiden nimet", html=False)
         def team_names(member):
-            return ";".join(t.name.replace(";", r'\;') for t in member.teams)
+            return ",".join(escape(t.name, ",") for t in member.teams)
 
         @monitor.field("Team", name="Jäsenet")
         def members(team):
-            return ";".join(str(m.id) for m in team.members)
+            return ",".join(str(m.id) for m in team.members)
 
         @members.html
         def members(team):
@@ -145,7 +145,7 @@ class MembersPlugin:
 
         @monitor.field("Team", name="Jäsenten nimet", html=False)
         def member_names(team):
-            return ";".join(m.name.replace(";", r'\;') for m in team.members)
+            return ",".join(escape(m.name, ",") for m in team.members)
 
 class EditorMemberHooksPlugin:
 
