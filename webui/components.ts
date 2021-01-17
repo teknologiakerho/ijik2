@@ -58,6 +58,63 @@ export const SectionListComponent : m.Component<{
 	)
 };
 
+//          <------ errors ------->
+//
+// [header] content content content
+//          . . . . . . . . . . . .
+//          . . . . . . . . . . . .
+//          . . . . . . . . . . . .
+//
+//          <action-yes> <action-no>
+export const SectionFormFrame : m.Component<{
+	errors?: [string];
+}> & {
+	errors: (errors?: [string]) => m.Vnode|undefined;
+	actions: (opt: {
+		yes: ActionOptions & { text?: string };
+		no?: ActionOptions & { text?: string };
+		[option: string]: any;
+	}) => m.Vnode;
+} = {
+	view: vnode => m(
+		Form,
+		SectionFormFrame.errors(vnode.attrs.errors),
+		vnode.children
+	),
+
+	errors: errors => errors && m(
+		".w-full.lg:w-3/5.m-auto.my-4",
+		errors.map(e => m(Notification.Error, e))
+	),
+
+	actions: ({yes, no, ...opt}) => {
+		return m(
+			".flex.w-full.lg:w-3/5.m-auto.lg:p-4.mt-8.lg:mt-0",
+			action({
+				element: "button.px-10.bg-green-600.hover:bg-green-500",
+				children: yes.text && [
+					m("i.fas.fa-check.mr-2"),
+					" ",
+					yes.text
+				],
+				...opt,
+				...yes,
+				text: undefined
+			}),
+			no && action({
+				element: "button.px-4.sm:px-10.bg-red-500.hover:bg-red-400.ml-auto.sm:mr-auto",
+				children: no.text && [
+					m("i.fas.fa-times"),
+					m(".hidden.sm:inline.pl-2", no.text)
+				],
+				...opt,
+				...no,
+				text: undefined
+			})
+		);
+	}
+};
+
 // ---- CSS shapes ----------------------------------------
 // see: https://css-tricks.com/snippets/css/css-triangle/
 
@@ -338,13 +395,15 @@ export const Input$: m.Component<{
 	)
 };
 
-// styled action button
-const actionStyle = "rounded p-2 disabled:bg-gray-200 disabled:text-gray-700 text-white transition font-bold whitespace-nowrap";
-export const action = ({element, children, ...attrs} : {
+type ActionOptions = {
 	element?: string | m.ComponentTypes;
 	children?: any;
 	[attr: string]: any;
-}) => (m as any)(
+};
+
+// styled action button
+const actionStyle = "rounded p-2 disabled:bg-gray-200 disabled:text-gray-700 text-white transition font-bold whitespace-nowrap";
+export const action = ({element, children, ...attrs} : ActionOptions) => (m as any)(
 	element || `button.${actionStyle.replace(' ', '.')}`,
 	{
 		class: actionStyle,

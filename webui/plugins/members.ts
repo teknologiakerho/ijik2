@@ -6,7 +6,8 @@ import {Layout, menu} from "../layout";
 import {pushNotification} from "../notify";
 import {route} from "../routes";
 import {
-	Form, Input$, LabeledFormComponent, Notification, OverlayAttrs, PluggableComponent, SectionListComponent, Tooltip$,
+	Input$, LabeledFormComponent, Notification, OverlayAttrs, PluggableComponent,
+	SectionFormFrame, SectionListComponent, Tooltip$,
 	action, bindChange, input, plugger, postForm
 } from "../components";
 import {
@@ -255,11 +256,8 @@ export const editorSection = plugger(editorSections)
 
 const Editor: m.Component<EditorState> = {
 	view: vnode => m(
-		Form,
-		vnode.attrs.errors && m(
-			".w-full.lg:w-3/5.m-auto.my-4",
-			vnode.attrs.errors.asArray()?.map(e => m(Notification.Error, e))
-		),
+		SectionFormFrame,
+		{ errors: vnode.attrs.errors?.asArray() },
 		m(
 			SectionListComponent,
 			{
@@ -267,19 +265,13 @@ const Editor: m.Component<EditorState> = {
 				componentAttrs: vnode.attrs
 			}
 		),
-		m(
-			".w-full.lg:w-3/5.m-auto.lg:p-4",
-			action({
-				element: "button.px-10.bg-green-600.hover:bg-green-500",
-				disabled: !!vnode.attrs.loading,
-				children: [
-					m("i.fas.fa-check.mr-2"),
-					" ",
-					vnode.attrs.info.isNew ? "Ilmoita osallistuja" : "Tallenna muutokset"
-				],
+		SectionFormFrame.actions({
+			yes: {
 				onclick: vnode.attrs.onsave,
-			})
-		)
+				text: vnode.attrs.info.isNew ? "Ilmoita osallistuja" : "Tallenna muutokset"
+			},
+			disabled: !!vnode.attrs.loading,
+		})
 	)
 };
 
@@ -434,7 +426,7 @@ const AddMemberCard: m.Component<any> = {
 		m("i.fas.fa-plus.text-4xl.text-green-500.group-hover:text-white.p-4"),
 		m(
 			".p-4",
-			"Lisää henkilö"
+			"Uusi henkilö"
 		)
 	)
 };
@@ -458,6 +450,7 @@ const SelectMember: m.ClosureComponent<SelectMemberArgs> = () => {
 			}),
 			m(
 				".mt-4",
+				m(AddMemberCard, { onclick: () => vnode.attrs.create(search) }),
 				(search === "" ? vnode.attrs.members : filterMembers(vnode.attrs.members, search))
 				.map(member => m(
 					MemberCard,
@@ -465,8 +458,7 @@ const SelectMember: m.ClosureComponent<SelectMemberArgs> = () => {
 						member,
 						onclick: () => vnode.attrs.selected(member)
 					}
-				)),
-				m(AddMemberCard, { onclick: () => vnode.attrs.create(search) })
+				))
 			)
 		)
 	};
@@ -597,10 +589,10 @@ ijik.plugins.members = (mems: Member[]) => {
 				m(
 					m.route.Link,
 					{
-						class: "text-green-600",
+						class: "bg-green-50 text-green-700 p-2 rounded mr-4",
 						href: "/members/list"
 					},
-					"Hallitse osallistujia: "
+					"Hallitse osallistujia"
 				),
 				"Tarkastele, muokkaa ja poista ilmoittamiasi osallistujia"
 			]

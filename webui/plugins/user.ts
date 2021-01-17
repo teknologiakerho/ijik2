@@ -3,9 +3,10 @@ import {ijik} from "../editor";
 import {Errors} from "../errors";
 import {Layout, menu} from "../layout";
 import {pushNotification} from "../notify";
-import {route} from "../routes";
+import {route, routeHome} from "../routes";
 import {
-	Form, Input$, LabeledFormComponent, Notification, PluggableComponent, SectionListComponent, Tooltip,
+	Input$, LabeledFormComponent, Notification, PluggableComponent, SectionFormFrame,
+	SectionListComponent, Tooltip,
 	action, bindChange, input, plugger, postForm
 } from "../components";
 
@@ -22,6 +23,7 @@ interface EditorState {
 	info: UserInfo;
 	errors?: Errors;
 	onsave?: () => void;
+	oncancel?: () => void;
 	loading?: boolean;
 }
 
@@ -89,11 +91,8 @@ export const editorSection = plugger(editorSections);
 
 const Editor: m.Component<EditorState> = {
 	view: vnode => m(
-		Form,
-		vnode.attrs.errors && m(
-			".w-full.lg:w-3/5.m-auto.my-4",
-			vnode.attrs.errors.asArray()?.map(e => m(Notification.Error, e))
-		),
+		SectionFormFrame,
+		{ errors: vnode.attrs.errors?.asArray() },
 		m(
 			SectionListComponent,
 			{
@@ -101,15 +100,17 @@ const Editor: m.Component<EditorState> = {
 				componentAttrs: vnode.attrs
 			}
 		),
-		m(
-			".w-full.lg:w-3/5.m-auto.lg:p-4",
-			action({
-				element: "button.px-10.bg-green-600.hover:bg-green-500",
-				disabled: !!vnode.attrs.loading,
-				children: [ m("i.fas.fa-check"), " Tallenna muutokset" ],
+		SectionFormFrame.actions({
+			yes: {
 				onclick: vnode.attrs.onsave,
-			})
-		)
+				text: "Tallenna muutokset"
+			},
+			no: vnode.attrs.oncancel && {
+				onclick: vnode.attrs.oncancel,
+				text: "Poistu tallentamatta"
+			},
+			disabled: !!vnode.attrs.loading,
+		})		
 	)
 };
 
@@ -135,6 +136,7 @@ const UserPage: m.ClosureComponent = () => {
 			{
 				info,
 				onsave,
+				oncancel: routeHome,
 				loading: post.loading,
 				errors: post.errors
 			}
@@ -169,10 +171,10 @@ ijik.plugins.user = (userInfo: UserInfo) => {
 				m(
 					m.route.Link,
 					{
-						class: "text-green-600",
+						class: "bg-green-50 text-green-700 p-2 mr-4",
 						href: "/teams/list"
 					},
-					"Ilmoittajan tiedot: "
+					"Ilmoittajan tiedot"
 				),
 				"Muokkaa ilmoittajan (sinä) tietoja"
 			]

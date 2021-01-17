@@ -5,10 +5,10 @@ import {Hook, hook} from "../hook";
 import {Layout, menu} from "../layout";
 import {pushNotification} from "../notify";
 import {dismissPopup, setPopup} from "../popup";
-import {route} from "../routes";
+import {route, routeHome} from "../routes";
 import {
-	Confirm, Form, Input$, LabeledFormComponent, Notification, OverlayAttrs, OverlayHost,
-	PluggableComponent, SectionListComponent, Tooltip$,
+	Confirm, Input$, LabeledFormComponent, Notification, OverlayAttrs, OverlayHost,
+	PluggableComponent, SectionFormFrame, SectionListComponent, Tooltip$,
 	plugger, bindChange, input, action, postForm
 } from "../components";
 
@@ -175,6 +175,7 @@ export interface EditorState {
 	info: NewTeamInfo | EditTeamInfo;
 	errors?: Errors;
 	onsave?: () => void;
+	oncancel?: () => void;
 	loading?: boolean;
 }
 
@@ -218,11 +219,8 @@ export const editorSection = plugger(editorSections);
 
 const EditorMain: m.Component<EditorState & OverlayAttrs> = {
 	view: vnode => m(
-		Form,
-		vnode.attrs.errors && m(
-			".w-full.lg:w-3/5.m-auto.my-4",
-			vnode.attrs.errors.asArray()?.map(e => m(Notification.Error, e))
-		),
+		SectionFormFrame,
+		{ errors: vnode.attrs.errors?.asArray() },
 		m(
 			SectionListComponent,
 			{
@@ -230,20 +228,17 @@ const EditorMain: m.Component<EditorState & OverlayAttrs> = {
 				componentAttrs: vnode.attrs
 			}
 		),
-		m(
-			//".w-full.lg:w-3/5.lg:border-l.lg:border-r.m-auto.border-t.lg:border-t-0.bg-white.p-4",
-			".w-full.lg:w-3/5.m-auto.lg:p-4.mt-8.lg:mt-0",
-			action({
-				element: "button.px-10.bg-green-600.hover:bg-green-500",
-				disabled: !!vnode.attrs.loading,
-				children: [
-					m("i.fas.fa-check.pr-2"),
-					" ",
-					vnode.attrs.info.isNew ? "Ilmoita joukkue" : "Tallenna muutokset"
-				],
+		SectionFormFrame.actions({
+			yes: {
 				onclick: vnode.attrs.onsave,
-			})
-		)
+				text: vnode.attrs.info.isNew ? "Ilmoita joukkue" : "Tallenna muutokset", 
+			},
+			no: vnode.attrs.oncancel && {
+				onclick: vnode.attrs.oncancel,
+				text: "Poistu tallentamatta"
+			},
+			disabled: !!vnode.attrs.loading
+		})
 	)
 };
 
@@ -299,6 +294,7 @@ const NewTeamPage: m.ClosureComponent = () => {
 			{
 				info,
 				onsave,
+				oncancel: routeHome,
 				loading: post.loading,
 				errors: post.errors
 			}
@@ -337,6 +333,7 @@ const EditTeamPage: m.ClosureComponent<{
 			{
 				info,
 				onsave,
+				oncancel: routeHome,
 				loading: post.loading,
 				errors: post.errors
 			}
@@ -407,10 +404,10 @@ ijik.plugins.teams = teams => {
 				m(
 					m.route.Link,
 					{
-						class: "text-green-600",
+						class: "bg-green-50 text-green-700 p-2 rounded mr-4",
 						href: "/teams/list"
 					},
-					"Hallitse joukkueita: "
+					"Hallitse joukkueita"
 				),
 				"Tarkastele, muokkaa ja poista ilmoittamiasi joukkueita"
 			]
@@ -428,10 +425,10 @@ ijik.plugins.teams = teams => {
 				m(
 					m.route.Link,
 					{
-						class: "text-green-600",
+						class: "bg-green-600 text-white p-2 rounded font-bold mr-4",
 						href: "/teams/new"
 					},
-					"Ilmoita joukkue: "
+					"Ilmoita joukkue"
 				),
 				"Ilmoita uusi joukkue"
 			]

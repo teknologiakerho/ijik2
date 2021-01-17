@@ -99,15 +99,15 @@ ijik.plugins.info = () => {
 	});
 
 	menu({
-		title: "Info",
+		title: "Aloitusnäyttö",
 		order: -100,
 		icon: "i.fas.fa-home",
 		onclick: () => m.route.set("/"),
 		isActive: () => m.route.get() === "/",
 		help: {
 			view: () => [
-				m("strong", "Käyttöohje"),
-				m.route.get() === "/" && " (Tämä sivu)"
+				"Aloitusnäyttö",
+				(m.route.get() === "/" || m.route.get() === "") && " (Tämä sivu)"
 			]
 		}
 	});

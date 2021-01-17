@@ -9,3 +9,5 @@ export const route = (path: string, component) => {
 export const startRouter = ($root: HTMLElement) => {
 	m.route($root, "/", routes);
 }
+
+export const routeHome = () => m.route.set("/");
