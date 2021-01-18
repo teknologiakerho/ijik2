@@ -60,6 +60,9 @@ const actions: Action[] = [
 
 export const homeAction = plugger(actions);
 
+const notifications: m.ComponentTypes[] = [];
+export const homeNotification = (component: m.ComponentTypes) => notifications.push(component);
+
 const InfoPage: m.Component = {
 	view: () => [
 		m(
@@ -67,6 +70,10 @@ const InfoPage: m.Component = {
 			"Tervetuloa ",
 			m("span.text-green-600", "IjIk"),
 			"-ilmoittautumisjärjestelmään"
+		),
+		notifications.length > 0 && m(
+			".p-4.space-y-4",
+			notifications.map(notification => m(notification))
 		),
 		m(
 			"table.border-collapse.m-0.sm:m-8.text-sm.sm:text-base",

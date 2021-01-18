@@ -8,6 +8,7 @@ from .jsonblob import *
 from .logging import *
 from .members import *
 from .monitor import *
+from .notify import *
 from .registrants import *
 from .teams import *
 from .validation import *

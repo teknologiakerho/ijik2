@@ -6,7 +6,7 @@ __all__ = ["TemplateMailerMixin"]
 class TemplateMailerMixin:
 
     Message = ijik.TemplateMessage
-    template = "email/base.html"
+    template = "email/base.txt"
 
     def __init__(self, sender, Message=None, template=None):
         self.sender = sender

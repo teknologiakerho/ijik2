@@ -13,5 +13,6 @@ import "./plugins/user";
 import "./plugins/category";
 import "./plugins/blob";
 import "./plugins/info";
+import "./plugins/notify";
 
 ijik.plugins.info();

@@ -173,6 +173,7 @@ export const Notification: m.Component<{
 }> & {
 	Error: m.Component;
 	Success: m.Component;
+	Info: m.Component;
 } = {
 	view: vnode => {
 		const { icon, ...attrs } = vnode.attrs;
@@ -202,6 +203,17 @@ export const Notification: m.Component<{
 			{
 				icon: "i.fas.fa-check.text-green-600.text-xl.mr-4",
 				class: "text-green-700 bg-green-100",
+			},
+			vnode.children
+		)
+	},
+
+	Info: {
+		view: vnode => m(
+			Notification,
+			{
+				icon: "i.fas.fa-info-circle.text-blue-600.text-xl.mr-4",
+				class: "text-blue-600 bg-blue-100",
 			},
 			vnode.children
 		)
