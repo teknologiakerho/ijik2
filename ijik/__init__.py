@@ -6,6 +6,7 @@ from .app import Ijik, create_app
 from .base import Registrant, Team, Member
 from .db import SessionManager
 from .category import Category
+from .email import LogSender, Message, SMTPLibSender, TemplateMessage
 from .entity import Cancel, EntityManager, Errors, entity_hook, validator
 from .form import Field
 from .jsonblob import schema_map

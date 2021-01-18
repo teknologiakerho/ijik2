@@ -55,6 +55,16 @@ class Registrant(MroReprMixin, IdentityMixin, AttributeMixin):
     key = sa.Column(sa.Text, nullable=False, unique=True, index=True)
     event = sa.Column(sa.Text, nullable=False, default="")
 
+    teams = relationship("Team",
+            cascade="all, delete-orphan",
+            passive_deletes=True
+    )
+
+    members = relationship("Member",
+            cascade="all, delete-orphan",
+            passive_deletes=True
+    )
+
     def __log_repr__(self, full):
         if full:
             return f"key: '{self.key}'"

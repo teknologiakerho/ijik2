@@ -95,7 +95,7 @@ class EditorPlugin:
                 )
             else:
                 resp = RedirectResponse(request.url.path, status_code=303)
-                editor.auth.login(resp, user.key)
+                editor.login(resp, user)
                 return resp
 
         @router.get("/login", response_class=HTMLResponse)
@@ -113,7 +113,7 @@ class EditorPlugin:
 
             if user:
                 resp = RedirectResponse(request.url_for("index"), status_code=303)
-                editor.auth.login(resp, user.key)
+                editor.login(resp, user)
                 return resp
 
             return editor.render_login(
@@ -123,15 +123,23 @@ class EditorPlugin:
 
         @router.post("/logout")
         @router.get("/logout")
-        async def logout(request: fastapi.Request):
-            if request.method == "GET":
-                if editor.auth.get_key(request):
-                    resp = RedirectResponse(request.url.path) 
-                else:
-                    return HTMLResponse(editor.render_logout(request=request))
-            else:
+        async def logout(
+                request: fastapi.Request,
+                db: Session = fastapi.Depends(self.get_session)
+            ):
+
+            user = editor.auth.get_login(request, db)
+
+            if request.method == "POST":
                 resp = Response(content="")
-            editor.auth.logout(resp)
+            elif user:
+                resp = RedirectResponse(request.url.path)
+            else:
+                resp = HTMLResponse(editor.render_logout(request=request))
+
+            if user:
+                editor.logout(resp, user)
+
             return resp
 
     @ijik.hookimpl

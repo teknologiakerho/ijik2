@@ -26,6 +26,14 @@ class Hooks:
     def ijik_editor_render_signup(editor, db, schema, errors, template):
         pass
 
+    @ijik.hookspec
+    def ijik_editor_login(editor, registrant):
+        pass
+
+    @ijik.hookspec
+    def ijik_editor_logout(editor, registrant):
+        pass
+
 # this must be defined before Editor
 def b58_time_rand_keygen(time_bytes, random_bytes):
     import base58
@@ -76,6 +84,14 @@ class Editor:
         kwargs["key"] = self.keyfunc()
         self.pluginmanager.hook.ijik_editor_create_signup(editor=self, kwargs=kwargs)
         return ijik.Registrant(**kwargs)
+
+    def login(self, response, registrant):
+        self.auth.login(response, registrant.key)
+        self.pluginmanager.hook.ijik_editor_login(editor=self, registrant=registrant)
+
+    def logout(self, response, registrant):
+        self.auth.logout(response)
+        self.pluginmanager.hook.ijik_editor_logout(editor=self, registrant=registrant)
 
     def render(self, **context):
         template = EditorTemplate(editor=self, **context)

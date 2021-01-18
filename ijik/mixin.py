@@ -10,8 +10,10 @@ def add_mixin(cls, c, *, back=False):
     return cls
 
 def mixin(cls, **kwargs):
-    f = getattr(cls, "__mixin__", add_mixin)
-    return functools.partial(f, **kwargs)
+    if hasattr(cls, "__mixin__"):
+        return functools.partial(cls.__mixin__, **kwargs)
+    else:
+        return functools.partial(add_mixin, cls, **kwargs)
 
 class bases(list):
 

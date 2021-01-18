@@ -23,10 +23,14 @@ class CategoriesPlugin:
     def get_categories(self, user):
         return self.categories_for_user(user) if self.categories_for_user else self.categories
 
+    def category_name(self, user, key):
+        return next(cat for cat in self.get_categories(user) if cat.id==key).name
+
     @ijik.hookimpl
     def ijik_plugin_init(self, app):
         ijik.mixin(app.mixins.EditorNewTeam)(EditorTeamCategory)
         ijik.mixin(app.mixins.EditorTeamInfo)(EditorTeamCategory)
+        app.templates.env.globals["category_name"] = self.category_name
 
     @ijik.hookimpl
     @ijik.validator

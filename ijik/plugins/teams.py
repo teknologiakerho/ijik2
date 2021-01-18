@@ -100,7 +100,6 @@ class EditorTeamHooksPlugin:
         self.TeamInfo = TeamInfo
 
     @ijik.hookimpl
-    def ijik_editor_render(self, db, registrant, template):
-        teams = [self.TeamInfo.from_orm(team).dict() for team in
-                db.query(ijik.Team).filter_by(registrant_id=registrant.id).all()]
+    def ijik_editor_render(self, registrant, template):
+        teams = [self.TeamInfo.from_orm(team).dict() for team in registrant.teams]
         template.js.append(f"ijik.plugins.teams({json.dumps(teams)})")

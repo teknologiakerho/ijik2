@@ -153,7 +153,6 @@ class EditorMemberHooksPlugin:
         self.MemberInfo = MemberInfo
 
     @ijik.hookimpl
-    def ijik_editor_render(self, db, registrant, template):
-        members = [self.MemberInfo.from_orm(member).dict() for member in
-                db.query(ijik.Member).filter_by(registrant_id=registrant.id).all()]
+    def ijik_editor_render(self, registrant, template):
+        members = [self.MemberInfo.from_orm(member).dict() for member in registrant.members]
         template.js.append(f"ijik.plugins.members({json.dumps(members)})")

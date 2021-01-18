@@ -1,6 +1,7 @@
 from .db import *
 from .category import *
 from .editor import *
+from .email import *
 from .errors import *
 from .form import *
 from .jsonblob import *
