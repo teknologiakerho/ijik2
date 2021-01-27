@@ -13,6 +13,7 @@ from .jsonblob import schema_map
 from .mixin import mixin
 from .monitor import KeyRegistry, Table
 from .validation import EntityValidator, UniqueMembers, UniqueTeams
+from .webhooks import UserWebhook, webhook
 
 # this must be last
 from .plugins import *

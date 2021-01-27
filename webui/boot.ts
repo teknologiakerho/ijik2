@@ -14,5 +14,6 @@ import "./plugins/category";
 import "./plugins/blob";
 import "./plugins/info";
 import "./plugins/notify";
+import "./plugins/webhook";
 
 ijik.plugins.info();
