@@ -3,6 +3,7 @@ import {ijik} from "../editor";
 import {Errors} from "../errors";
 import {Hook, hook} from "../hook";
 import {Layout, menu} from "../layout";
+import {$} from "../messages";
 import {pushNotification} from "../notify";
 import {dismissPopup, setPopup} from "../popup";
 import {route, routeHome} from "../routes";
@@ -12,6 +13,26 @@ import {
 	plugger, bindChange, input, action, postForm
 } from "../components";
 
+$.defaults({
+	"team:confirm-delete": ({team}) => `Haluatko varmasti poistaa joukkueen`
+		+ ` <span class=font-bold>${team.name}</span>?`
+		+ "<br/>Et voi peruuttaa poistoa.",
+	"team:delete-button": "<i class='fas fa-trash'></i> Poista joukkue",
+	"team:delete-hover": "Poista&nbsp;joukkue",
+	"team:edit-cancel": "Poistu tallentamatta",
+	"team:edit-details": "Perustiedot",
+	"team:edit-hover": "Muokkaa&nbsp;joukkuetta",
+	"team:edit-name": "Joukkueen nimi",
+	"team:edit-return": "Palaa takaisin",
+	"team:edit-save": ({info}) => info.isNew ? "Ilmoita joukkue" : "Tallenna muutokset",
+	"team:edit-title": "Muokkaa joukkuetta",
+	"team:list-help": "Tarkastele, muokkaa ja poista ilmoittamiasi joukkueita",
+	"team:list-title": "Ilmoitetut joukkueet",
+	"team:name-column": "Joukkue",
+	"team:new-help": "Ilmoita uusi joukkue",
+	"team:new-title": "Uusi joukkue",
+	"team:notify-saved": ({isNew}) => isNew ? "Joukkue ilmoitettu" : "Muutokset tallennettu"
+});
 
 // ---- Team Management ----------------------------------------
 
@@ -37,7 +58,7 @@ const deleteTeam = (id: number) => {
 export const TeamBadge: m.Component<{team: Team}> = {
 	view: vnode => m(
 		Tooltip$,
-		{ text: "Muokkaa&nbsp;joukkuetta" },
+		{ text: $("team:edit-hover")},
 		m(
 			m.route.Link,
 			{
@@ -59,17 +80,10 @@ const ConfirmDelete: m.Component<{
 		Confirm,
 		{
 			yes: vnode.attrs.yes,
-			yesText: [
-				m("i.fas.fa-trash"),
-				" Poista joukkue"
-			],
+			yesText: m.trust($("team:delete-button", { team: vnode.attrs.team })),
 			no: dismissPopup
 		},
-		"Haluatko varmasti poistaa joukkueen ",
-		m("span.font-bold", vnode.attrs.team.name),
-		"?",
-		m("br"),
-		"Et voi peruuttaa poistoa."
+		m.trust($("team:confirm-delete", { team: vnode.attrs.team }))
 	)
 };
 
@@ -103,7 +117,7 @@ const DeleteTeam: m.ClosureComponent<{team: Team}> = vnode => {
 
 const teamActions: PluggableComponent<{team: Team}>[] = [
 	{
-		title: "Poista&nbsp;joukkue",
+		title: $("team:delete-hover"),
 		order: 100,
 		component: DeleteTeam
 	}
@@ -113,12 +127,12 @@ export const teamAction = plugger(teamActions);
 
 const teamListColumns: PluggableComponent<{team: Team}>[] = [
 	{
-		title: "Joukkue",
+		title: $("team:name-column"),
 		order: -100,
 		component: TeamBadge
 	},
 	{
-		title: "Toiminnot",
+		title: $("edit:actions"),
 		order: 100,
 		component: {
 			view: vnode => teamActions.map(action => m(
@@ -182,7 +196,7 @@ export interface EditorState {
 const bindName = bindChange<EditorState, "info", "name">("info", "name");
 const details: PluggableComponent<EditorState>[] = [
 	{
-		title: "Nimi",
+		title: $("team:edit-name"),
 		order: -100,
 		component: {
 			view: vnode => m(
@@ -201,7 +215,7 @@ export const editorDetail = plugger(details);
 
 const editorSections: PluggableComponent[] = [
 	{
-		title: "Perustiedot",
+		title: $("team:edit-details"),
 		order: -100,
 		component: {
 			view: vnode => m(
@@ -231,11 +245,11 @@ const EditorMain: m.Component<EditorState & OverlayAttrs> = {
 		SectionFormFrame.actions({
 			yes: {
 				onclick: vnode.attrs.onsave,
-				text: vnode.attrs.info.isNew ? "Ilmoita joukkue" : "Tallenna muutokset", 
+				text: $("team:edit-save", { info: vnode.attrs.info }),
 			},
 			no: vnode.attrs.oncancel && {
 				onclick: vnode.attrs.oncancel,
-				text: "Poistu tallentamatta"
+				text: $("team:edit-cancel", { info: vnode.attrs.info })
 			},
 			disabled: !!vnode.attrs.loading
 		})
@@ -249,7 +263,7 @@ const EditorOverlayFrame: m.Component<OverlayAttrs> = {
 			+".hover:bg-red-100",
 			{ onclick: vnode.attrs.popOverlay },
 			m("i.fas.fa-arrow-left"),
-			m("span.ml-2", "Palaa takaisin"),
+			m("span.ml-2", $("team:edit-return")),
 		),
 		vnode.children
 	]
@@ -283,7 +297,10 @@ const NewTeamPage: m.ClosureComponent = () => {
 		submit_(info);
 		post({ body: { ...info, isNew: undefined }}).then(team => {
 			addTeam(team);
-			pushNotification(Notification.Success, "Joukkue luotu").dismiss(5000);
+			pushNotification(Notification.Success, $("team:notify-saved", {
+				...team,
+				isNew: true
+			})).dismiss(5000);
 			m.route.set("/teams/list");
 		});
 	};
@@ -322,7 +339,10 @@ const EditTeamPage: m.ClosureComponent<{
 			params: { id: vnode.attrs.info.id }
 		}).then(team => {
 			Object.assign(vnode.attrs.info, team);
-			pushNotification(Notification.Success, "Muutokset tallennettu").dismiss(5000);
+			pushNotification(Notification.Success, $("team:notify-saved", {
+				...team,
+				isNew: false
+			})).dismiss(5000);
 			m.route.set("/teams/list");
 		});
 	};
@@ -353,7 +373,7 @@ ijik.plugins.teams = teams => {
 			Layout,
 			{
 				top: {
-					view: () => m(".text-2xl", "Uusi joukkue")
+					view: () => m(".text-2xl", $("team:new-title"))
 				}
 			},
 			m(NewTeamPage)
@@ -373,7 +393,7 @@ ijik.plugins.teams = teams => {
 				Layout,
 				{
 					top: {
-						view: () => m(".text-2xl", "Muokkaa joukkuetta")
+						view: () => m(".text-2xl", $("team:edit-title"))
 					}
 				},
 				m(EditTeamPage, { info })
@@ -386,7 +406,7 @@ ijik.plugins.teams = teams => {
 			Layout,
 			{
 				top: {
-					view: () => m(".text-2xl", "Ilmoitetut joukkueet")
+					view: () => m(".text-2xl", $("team:list-title"))
 				}
 			},
 			m(TeamListPage)
@@ -394,7 +414,7 @@ ijik.plugins.teams = teams => {
 	});
 
 	menu({
-		title: "Joukkueet",
+		title: $("team:list-title"),
 		order: -90,
 		icon: "i.fas.fa-list-ul",
 		onclick: () => m.route.set("/teams/list"),
@@ -407,16 +427,16 @@ ijik.plugins.teams = teams => {
 						class: "bg-green-50 text-green-700 p-2 rounded mr-4",
 						href: "/teams/list"
 					},
-					"Hallitse joukkueita"
+					$("team:list-title"),
 				),
-				"Tarkastele, muokkaa ja poista ilmoittamiasi joukkueita"
+				$("team:list-help")
 			]
 		}
 	});
 
 	menu({
-		title: "Ilmoita joukkue",
-		order: 90,
+		title: $("team:new-title"),
+		order: -95,
 		icon: "i.fas.fa-plus",
 		onclick: () => m.route.set("/teams/new"),
 		isActive: () => m.route.get() === "/teams/new" || m.route.get().startsWith("/teams/edit/"),
@@ -428,9 +448,9 @@ ijik.plugins.teams = teams => {
 						class: "bg-green-600 text-white p-2 rounded font-bold mr-4",
 						href: "/teams/new"
 					},
-					"Ilmoita joukkue"
+					$("team:new-title")
 				),
-				"Ilmoita uusi joukkue"
+				$("team:new-help")
 			]
 		}
 	});

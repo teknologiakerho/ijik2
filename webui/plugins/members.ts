@@ -3,6 +3,7 @@ import {ijik} from "../editor";
 import {Errors} from "../errors";
 import {Hook, hook} from "../hook";
 import {Layout, menu} from "../layout";
+import {$} from "../messages";
 import {pushNotification} from "../notify";
 import {route} from "../routes";
 import {
@@ -24,6 +25,24 @@ declare module "../plugins/teams" {
 		member_ids?: number[];
 	}
 }
+
+$.defaults({
+	"member:delete-hover": "Poista&nbsp;osallistuja",
+	"member:edit-details": "Osallistujatiedot",
+	"member:edit-hover": "Muokkaa&nbsp;osallistujaa",
+	"member:edit-save": ({info}) => info.isNew ? "Ilmoita osallistuja" : "Tallenna muutokset",
+	"member:edit-title": "Muokkaa osallistujaa",
+	"member:first-name": "Etunimi",
+	"member:last-name": "Sukunimi",
+	"member:list-help": "Tarkastele, muokkaa ja poista ilmoittamiasi osallistujia",
+	"member:list-title": "Ilmoitetut osallistujat",
+	"member:name-column": "Nimi",
+	"member:new-card": "Uusi henkilö",
+	"member:search": "Hae henkilöitä...",
+	"member:team-add": "Lisää jäsen",
+	"member:team-list-title": "Jäsenet",
+	"member:teams-column": "Joukkueet",
+});
 
 // ---- Members management ----------------------------------------
 
@@ -77,7 +96,7 @@ const getTeams = (id: number) => teams.filter(t => t.member_ids?.includes(id));
 const MemberBadge: m.Component<{member: Member}> = {
 	view: vnode => m(
 		Tooltip$,
-		{ text: "Muokkaa&nbsp;osallistujaa" },
+		{ text: $("member:edit-hover") },
 		m(
 			m.route.Link,
 			{
@@ -121,7 +140,7 @@ const DeleteMember: m.ClosureComponent<{member: Member}> = vnode => {
 
 const memberActions: PluggableComponent<{member: Member}>[] = [
 	{
-		title: "Poista&nbsp;osallistuja",
+		title: $("member:delete-hover"),
 		order: 100,
 		component: DeleteMember
 	}
@@ -129,12 +148,12 @@ const memberActions: PluggableComponent<{member: Member}>[] = [
 
 const memberListColumns: PluggableComponent<{member: Member}>[] = [
 	{
-		title: "Osallistuja",
+		title: $("member:name-column"),
 		order: -100,
 		component: MemberBadge
 	},
 	{
-		title: "Joukkueet",
+		title: $("member:teams-column"),
 		order: -90,
 		component: {
 			view: vnode => m(
@@ -144,7 +163,7 @@ const memberListColumns: PluggableComponent<{member: Member}>[] = [
 		}
 	},
 	{
-		title: "Toiminnot",
+		title: $("edit:actions"),
 		order: 100,
 		component: {
 			view: vnode => m(
@@ -220,13 +239,13 @@ const details: PluggableComponent<EditorState>[] = [
 					onchange: bindFirstName(vnode),
 					value: bindFirstName.get(vnode),
 					errors: !!vnode.attrs.errors?.field("name"),
-					placeholder: "Etunimi"
+					placeholder: $("member:first-name")
 				}),
 				input({
 					onchange: bindLastName(vnode),
 					value: bindLastName.get(vnode),
 					errors: !!vnode.attrs.errors?.field("name"),
-					placeholder: "Sukunimi",
+					placeholder: $("member:last-name"),
 					class: ".lg:ml-4"
 				})
 			)
@@ -237,7 +256,7 @@ export const editorDetail = plugger(details);
 
 const editorSections: PluggableComponent<EditorState>[] = [
 	{
-		title: "Osallistujatiedot",
+		title: $("member:edit-details"),
 		order: -100,
 		component: {
 			view: vnode => m(
@@ -268,7 +287,7 @@ const Editor: m.Component<EditorState> = {
 		SectionFormFrame.actions({
 			yes: {
 				onclick: vnode.attrs.onsave,
-				text: vnode.attrs.info.isNew ? "Ilmoita osallistuja" : "Tallenna muutokset"
+				text: $("member:edit-save", { info: vnode.attrs.info }),
 			},
 			disabled: !!vnode.attrs.loading,
 		})
@@ -383,14 +402,14 @@ const editorMemberActions: PluggableComponent<{state: TeamEditorState; member: M
 
 const editorMemberListColumns: PluggableComponent<{state: TeamEditorState; member: Member}>[] = [
 	{
-		title: "Nimi",
+		title: $("member:name-column"),
 		order: -100,
 		component: {
 			view: vnode => displayName(vnode.attrs.member)
 		}
 	},
 	{
-		title: "Toiminnot",
+		title: $("edit:actions"),
 		order: 100,
 		component: {
 			view: vnode => editorMemberActions.map(action => m(
@@ -426,7 +445,7 @@ const AddMemberCard: m.Component<any> = {
 		m("i.fas.fa-plus.text-4xl.text-green-500.group-hover:text-white.p-4"),
 		m(
 			".p-4",
-			"Uusi henkilö"
+			$("member:new-card")
 		)
 	)
 };
@@ -445,7 +464,7 @@ const SelectMember: m.ClosureComponent<SelectMemberArgs> = () => {
 			".w-full",
 			input({
 				class: "w-full",
-				placeholder: "Hae henkilöitä...",
+				placeholder: $("member:search"),
 				oninput: e => search = e.target.value
 			}),
 			m(
@@ -514,7 +533,7 @@ const TeamEditorMembers: m.Component<TeamEditorState & OverlayAttrs> = {
 					children: [
 						m("i.fas.fa-plus-circle.mr-2"),
 						" ",
-						"Lisää jäsen"
+						$("member:team-add")
 					],
 					onclick: () => vnode.attrs.pushOverlay(SelectMemberOverlay, {
 						members: members.filter(member => !vnode.attrs.info.member_ids?.includes(member.id)),
@@ -550,7 +569,7 @@ ijik.plugins.members = (mems: Member[]) => {
 			Layout,
 			{
 				top: {
-					view: () => m(".text-2xl", "Ilmoitetut osallistujat")
+					view: () => m(".text-2xl", $("member:list-title"))
 				}
 			},
 			m(MembersListPage)
@@ -570,7 +589,7 @@ ijik.plugins.members = (mems: Member[]) => {
 				Layout,
 				{
 					top: {
-						view: () => m(".text-2xl", "Muokkaa osallistujaa")
+						view: () => m(".text-2xl", $("member:edit-title"))
 					}
 				},
 				m(EditMemberPage, { info })
@@ -579,7 +598,7 @@ ijik.plugins.members = (mems: Member[]) => {
 	});
 
 	menu({
-		title: "Jäsenet",
+		title: $("member:list-title"),
 		order: -80,
 		icon: "i.fas.fa-users-cog",
 		onclick: () => m.route.set("/members/list"),
@@ -592,21 +611,21 @@ ijik.plugins.members = (mems: Member[]) => {
 						class: "bg-green-50 text-green-700 p-2 rounded mr-4",
 						href: "/members/list"
 					},
-					"Hallitse osallistujia"
+					$("member:list-title")
 				),
-				"Tarkastele, muokkaa ja poista ilmoittamiasi osallistujia"
+				$("member:list-help")
 			]
 		}	
 	});
 
 	teamEditorSection({
-		title: "Jäsenet",
+		title: $("member:team-list-title"),
 		order: -80,
 		component: TeamEditorMembers
 	});
 
 	teamListColumn({
-		title: "Jäsenet",
+		title: $("member:team-list-title"),
 		order: -80,
 		component: {
 			view: vnode => m(

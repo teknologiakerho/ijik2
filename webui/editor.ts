@@ -1,3 +1,4 @@
+import {$} from "./messages";
 import {startRouter} from "./routes";
 
 export interface Ijik {
@@ -10,3 +11,8 @@ export const ijik : Ijik = (function(){
 	f.plugins = {};
 	return f;
 })();
+
+$.defaults({
+	"edit:actions": "Toiminnot",
+	"edit:entity-name": "Nimi"
+});

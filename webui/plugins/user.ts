@@ -172,7 +172,7 @@ ijik.plugins.user = (userInfo: UserInfo) => {
 					m.route.Link,
 					{
 						class: "bg-green-50 text-green-700 p-2 mr-4",
-						href: "/teams/list"
+						href: "/user"
 					},
 					"Ilmoittajan tiedot"
 				),
