@@ -2,6 +2,8 @@
 {%- endblock -%}
 {% block signature %}
 -------------------------------------------------
+{%- block signature_content -%}
 Tämä viesti on lähetetty automaattisesti.
 ijik2 :: https://github.com/teknologiakerho/ijik2
+{%- endblock -%}
 {% endblock %}
