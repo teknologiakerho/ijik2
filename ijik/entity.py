@@ -44,8 +44,8 @@ class Session:
             result += check(next(hook))
             self.db.commit()
         except Exception as e:
-            self.db.rollback()
             hook.throw(e)
+            self.db.rollback()
             raise
 
         result += next(hook)
@@ -67,8 +67,8 @@ class Session:
             result += check(next(hook))
             self.db.commit()
         except Exception as e:
-            self.db.rollback()
             hook.throw(e)
+            self.db.rollback()
             raise
 
         result += next(hook)
@@ -85,8 +85,8 @@ class Session:
             result += check(next(hook))
             self.db.commit()
         except Exception as e:
-            self.db.rollback()
             hook.throw(e)
+            self.db.rollback()
             raise
 
         result += next(hook)
