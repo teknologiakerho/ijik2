@@ -12,7 +12,7 @@ from .form import Field
 from .jsonblob import schema_map
 from .mixin import mixin
 from .monitor import KeyRegistry, Table
-from .validation import EntityValidator, UniqueMembers, UniqueTeams
+from .validation import EntityValidator, TeamSize, UniqueMembers, UniqueTeams
 from .webhooks import UserWebhook, webhook
 
 # this must be last

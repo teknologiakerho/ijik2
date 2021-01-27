@@ -35,3 +35,22 @@ class UniqueTeams(EntityValidator):
 
         if db.query(query.exists()).scalar():
             return ijik.Errors({"name": "Tämän niminen joukkue on jo ilmoitettu"})
+
+class TeamSize(EntityValidator):
+
+    def __init__(self, get_limits):
+        self.get_limits = get_limits
+
+    def validate_team(self, team, db, is_new):
+        limit = self.get_limits(team)
+        print(limit)
+        if not limit:
+            return
+
+        m, M = limit
+
+        if m is not None and len(team.member_ids) < m:
+            return ijik.Errors({"members": f"Joukkueessa on oltava vähintään {m} jäsentä"})
+
+        if M is not None and len(team.member_ids) > M:
+            return ijik.Errors({"members": f"Joukkueessa saa olla korkeintaan {M} jäsentä"})
