@@ -3,7 +3,7 @@ hookimpl = pluggy.HookimplMarker("ijik")
 hookspec = pluggy.HookspecMarker("ijik")
 
 from .app import Ijik, create_app
-from .base import Registrant, Team, Member
+from .base import Registrant, Team, TeamMember, Member
 from .db import SessionManager
 from .category import Category
 from .email import LogSender, Message, SMTPLibSender, TemplateMessage

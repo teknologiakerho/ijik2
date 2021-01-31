@@ -6,8 +6,12 @@
 
 		{% if type == "checkbox" %}
 
-			{% call macros.labeled_checkbox(label or name) %}
-				{{ macros.checkbox_input(name, value) }}
+			{% call macros.labeled_checkbox(label or name, errors=errors) %}
+				{{ macros.checkbox_input(
+					name = name,
+					checked = value,
+					required = required
+				) }}
 			{% endcall %}
 			
 		{% elif type == "select" %}

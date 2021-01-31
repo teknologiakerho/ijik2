@@ -13,16 +13,6 @@
 		<div class="flex-1">
 			{% include "branding/logo.html" %}
 
-			{% if errors %}
-				<div class="py-4">
-					{% for e in errors.direct_causes %}
-						{% call macros.danger_notify() %}
-							{{ e }}
-						{% endcall %}
-					{% endfor %}
-				</div>
-			{% endif %}
-
 			{% block form %}
 			{% endblock %}
 		</div>

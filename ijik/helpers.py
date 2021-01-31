@@ -115,34 +115,18 @@ def partial(model):
         { "__annotations__": dict((k, typing.Optional[v]) for k,v in model.__annotations__.items()) }
     )
 
-# filter out fields specified in __const__ (not recursive)
-#def mutable(model):
-#    if "__const__" not in model.__dict__:
-#        return model
-#
-#    return type(
-#        model.__name__,
-#        model.__bases__,
-#        dict((k, v) for k,v in k not in model__const__)
-#    )
+# unpack a generic container, eg: Optional[int] -> Optional, int
+def unpack_container(type_):
+    origin = getattr(type_, "__origin__", None)
+    if not origin:
+        return None, type_
 
-#def copy_kwargs(**dupe):
-#    def ret(f):
-#        @wrap_argspec(f)
-#        def w(*args, **kwargs):
-#            for dest,src in dupe.items():
-#                kwargs[dest] = kwargs[src]
-#            return f(*args, **kwargs)
-#        return w
-#    return ret
+    if origin is typing.Union:
+        if len(type_.__args__) == 2 and type(None) in type_.__args__:
+            return typing.Optional, *(t for t in type_.__args__ if t is not type(None))
+        return None, type_
 
-# for dynamic generation of pluggy hookspecs
-#def hook_signature(*names):
-#    def f(): pass
-#    f.__signature__ = inspect.Signature([
-#        inspect.Parameter(name, inspect.Parameter.POSITIONAL_OR_KEYWORD) for name in names
-#    ])
-#    return f
+    return origin, *type_.__args__
 
 # fake location of pydantic validator
 def loc_validator(loc):

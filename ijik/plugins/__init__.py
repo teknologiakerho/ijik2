@@ -9,6 +9,7 @@ from .logging import *
 from .members import *
 from .monitor import *
 from .notify import *
+from .privacypolicy import *
 from .registrants import *
 from .teams import *
 from .validation import *

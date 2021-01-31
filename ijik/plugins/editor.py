@@ -82,9 +82,8 @@ class EditorPlugin:
                 db: Session = fastapi.Depends(self.get_session)
             ):
 
-            user = editor.create_signup(schema.dict())
-
             try:
+                user = editor.create_signup(schema.dict())
                 self.entitymanager.session(db).add(user)
             except ijik.Cancel as e:
                 return editor.render_signup(

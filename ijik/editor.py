@@ -82,7 +82,7 @@ class Editor:
 
     def create_signup(self, kwargs):
         kwargs["key"] = self.keyfunc()
-        self.pluginmanager.hook.ijik_editor_create_signup(editor=self, kwargs=kwargs)
+        check(self.pluginmanager.hook.ijik_editor_create_signup(editor=self, kwargs=kwargs))
         return ijik.Registrant(**kwargs)
 
     def login(self, response, registrant):

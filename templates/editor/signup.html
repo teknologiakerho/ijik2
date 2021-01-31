@@ -6,6 +6,12 @@
 	{{ ls.navi("/signup") }}
 
 	<form method="POST" class="grid grid-cols-2 gap-4 p-4 rounded-b border border-t-0">
+		{% if errors %}
+			<div class="col-span-full py-2">
+				{{ macros.direct_error_list(errors) }}
+			</div>
+		{% endif %}
+
 		{% block inputs %}
 			{{ inputs|join("\n")|safe }}
 		{% endblock %}

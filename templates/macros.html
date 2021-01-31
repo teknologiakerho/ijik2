@@ -9,6 +9,16 @@
 	</div>
 {% endmacro %}
 
+{% macro direct_error_list(errors) %}
+	{% if errors %}
+		{% for e in errors.direct_causes %}
+			{% call danger_notify() %}
+				{{ e }}
+			{% endcall %}
+		{% endfor %}
+	{% endif %}
+{% endmacro %}
+
 {% macro info_notify() %}
 	<div class="p-2 rounded bg-blue-100 text-blue-500 flex items-center">
 		<i class="fas fa-info-circle mr-4 text-xl"></i>
@@ -70,16 +80,17 @@
 
 {# -- checkbox -------------------- #}
 
-{% macro checkbox_input(name, checked) %}
+{% macro checkbox_input(name, checked, required=false) %}
 	<input type="checkbox"
 		   name="{{name}}"
+		   {% if required %} required {% endif %}
 		   {% if checked %} checked {% endif %}
 		   class="h-5 w-5 mr-2"
 		   />
 {% endmacro %}
 
-{% macro labeled_checkbox(label) %}
-	<label class="flex items-center text-gray-800">
+{% macro labeled_checkbox(label, errors=false) %}
+	<label class="flex items-center text-gray-800 {% if errors %} p-1 border border-red-500 {% endif %}">
 		{{ caller() }}
 		{{ label }}
 	</label>
