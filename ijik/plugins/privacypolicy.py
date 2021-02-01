@@ -1,6 +1,8 @@
 import typing
+import json
 
 import pydantic
+import jinja2
 
 import ijik
 from ijik.helpers import partial
@@ -13,16 +15,22 @@ class PrivacyPolicyPlugin:
     prio = 100
 
     def __init__(self, *,
-                 label="Hyväksyn tietosuojahedot",
+                 label=None,
+                 href=None,
                  fail_message="Sinun on hyväksyttävä tietosuojaehdot",
                  input_fail_message="Hyväksy tietosuojaehdot",
                  prio=None):
+
+        if label is None:
+            label = jinja2.Markup(f"<span>Hyväksyn <a href='{href}' class='text-blue-500' target=_blank>tietosuojaehdot</a></span>")\
+                if href else "Hyväksyn tietosuojaehdot"
 
         self.field = ijik.Field(
             "privacy_ok", typing.Literal[True],
             label = label
         )
 
+        self.href = href
         self.fail_message = fail_message
         self.input_fail_message = input_fail_message
 
@@ -33,6 +41,11 @@ class PrivacyPolicyPlugin:
     def ijik_plugin_init(self, app):
         self.form_renderer = app.form_renderer
         ijik.mixin(app.mixins.EditorNewSignup)(partial(UserAgreeMixin))
+
+    @ijik.hookimpl
+    def ijik_editor_render(self, template):
+        if self.href:
+            template.js.append(f"ijik.plugins.privacypolicy({json.dumps({'href': self.href})})")
 
     @ijik.hookimpl
     def ijik_editor_render_signup(self, schema, errors, template):

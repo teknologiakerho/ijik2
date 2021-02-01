@@ -3,7 +3,7 @@ import {ijik} from "../editor";
 import {Help, Layout, menu} from "../layout";
 import {$} from "../messages";
 import {route} from "../routes";
-import {PluggableComponent, action, plugger, triangle} from "../components";
+import {Pluggable, PluggableComponent, action, plugger, triangle} from "../components";
 
 $.defaults({
 	"info:header": "<div class='p-4 text-xl text-center'>"
@@ -18,6 +18,30 @@ $.defaults({
 	"info:title": "Aloitusnäyttö",
 });
 
+type InfoLink = Pluggable & {
+	href: string;
+	icon: string;
+	selector?: string;
+};
+
+const infoLinks: InfoLink[] = [
+	{
+		title: "teknologiakerho/ijik2",
+		order: 0,
+		href: "https://github.com/teknologiakerho/ijik2",
+		icon: "i.fab.fa-github"
+	},
+	{
+		title: "teknologiakerho.fi",
+		order: 10,
+		href: "https://teknologiakerho.fi",
+		icon: "i.fas.fa-globe",
+		selector: "a.text-blue-600"
+	}
+];
+
+export const infoLink = plugger(infoLinks);
+
 const infoPanels: PluggableComponent[] = [
 	{
 		title: $("info:views-title"),
@@ -30,24 +54,15 @@ const infoPanels: PluggableComponent[] = [
 		component: {
 			view: () => m(
 				"table",
-				m(
+				infoLinks.map(link => m(
 					"tr",
-					m("td.p-2", m("i.fab.fa-github")),
+					m("td.p-2", m(link.icon)),
 					m("td.p-2", m(
-						"a",
-						{href: "https://github.com/teknologiakerho/ijik2"},
-						"teknologiakerho/ijik2"
+						link.selector || "a",
+						{ href: link.href, target: "_blank" },
+						link.title
 					))
-				),
-				m(
-					"tr",
-					m("td.p-2", m("i.fas.fa-globe")),
-					m("td.p-2", m(
-						"a.text-blue-600",
-						{href: "https://teknologiakerho.fi"},
-						"teknologiakerho.fi"
-					))
-				)
+				))
 			)
 		}
 	}	
